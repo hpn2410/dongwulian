@@ -334,7 +334,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 32,
+      "width": 28,
       "height": 40.32
     },
     "_anchorPoint": {
@@ -346,7 +346,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        46,
+        55,
         89,
         0,
         0,
@@ -389,7 +389,7 @@
     "_dstBlendFactor": 771,
     "_string": "步",
     "_N$string": "步",
-    "_fontSize": 32,
+    "_fontSize": 28,
     "_lineHeight": 32,
     "_enableWrapText": true,
     "_N$file": null,
@@ -2558,7 +2558,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 96,
+      "width": 84,
       "height": 40.32
     },
     "_anchorPoint": {
@@ -2613,7 +2613,7 @@
     "_dstBlendFactor": 771,
     "_string": "下一关",
     "_N$string": "下一关",
-    "_fontSize": 32,
+    "_fontSize": 28,
     "_lineHeight": 32,
     "_enableWrapText": true,
     "_N$file": null,

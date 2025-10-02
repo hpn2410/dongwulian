@@ -27,6 +27,8 @@ export default class LocalizationManager extends DataCenter {
         "StepText": { en: "Steps: ", vi: "Bước: " },
         "TimeText": { en: "Time: ", vi: "Thời Gian: " },
         "LevelText": { en: "Level ", vi: "Màn " },
+        "RankText": { en: "Rank ", vi: "Hạng " },
+        "NameText": { en: "Name ", vi: "Tên " },
         "UsageExceededPlayerText": { en: "Usage         Exceeded         Player", vi: "Tốn          Vượt           Người Chơi" },
         "ConnectSameAnimalText": { en: "Connect Same Animal", vi: "Nối Con Vật Giống Nhau" },
         "PressAnyButtonToCloseText": { en: "Press Any Button To Close", vi: "Nhấn Bất Kỳ Nút Để Đóng" },

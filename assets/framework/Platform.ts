@@ -22,6 +22,8 @@ export default class Platform
     static isAndroid = false
     static isIOS = false;
 
+    static readonly RANK_API_URL = "https://5d820f171c8ff70014ef438d.mockapi.io/1/ranking-list";
+
     static getOpenID()
     {
         if(cc.sys.WECHAT_GAME == cc.sys.platform)
@@ -370,12 +372,16 @@ export default class Platform
         if(cc.sys.platform == cc.sys.QQ_PLAY)
         {
             return BKTool.getRankList((errorCode,list)=>{
-                callback && callback.call(target,errorCode,list);
+                callback && callback.call(target,errorCode,list || []);
             })
         }else if(cc.sys.platform == cc.sys.WECHAT_GAME)
         {
             
         }
+
+        Platform.fetchRankListFromServer().then(list => {
+            callback && callback.call(target, 0, list || []);
+        });
     }
 
     static uploadScore(score)
@@ -393,4 +399,30 @@ export default class Platform
         }
     }
 
+    // fetch rank list from server (for platforms without built-in rank support)
+    static fetchRankListFromServer(): Promise<any[]> {
+        return new Promise((resolve, reject) => {
+            if (typeof fetch === "function") {
+                fetch(Platform.RANK_API_URL, { method: "GET" })
+                    .then(resp => {
+                        if (!resp.ok) throw new Error("Network response not ok: " + resp.status);
+                        return resp.json();
+                    })
+                    .then(data => {
+                        // đảm bảo trả về mảng
+                        if (!Array.isArray(data)) data = [];
+                        resolve(data);
+                    })
+                    .catch(err => {
+                        cc.warn("[Platform] fetchRankListFromServer error:", err);
+                        resolve([]); // fallback trả mảng rỗng (không reject để code gọi dễ xử lý)
+                    });
+            } else if (typeof wx !== "undefined" && wx.request) {
+                resolve([]); // placeholder if no fetch and no wx.request
+            } else {
+                // fallback: cc.loader (older versions) or trả về rỗng
+                resolve([]);
+            }
+        });
+    }
 }
