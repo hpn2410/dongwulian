@@ -138,38 +138,48 @@ export default class LineGame extends cc.Component
         // this._uiManager = new ni(this._stageIndex + 1),
         // this.owner.addChild(this._uiLayer.add(this._uiManager))
 
-        UserInfo.timePassed = 0;
+        //UserInfo.timePassed = 0;
+        UserInfo.timePassed = this._timeLimit;
         UserInfo.stepUsed = 0;
+
+        // this.schedule(_=>{
+        //     if (this._isGameOver) return;
+
+        //     UserInfo.timePassed += 1
+        //     this.timeLabel.string = UserInfo.timePassed + "s";
+        //     lang === "vi" ? this.stepLabel.string = UserInfo.stepUsed +" bước" : this.stepLabel.string = UserInfo.stepUsed +" steps"
+        //     //this.stepLabel.string = UserInfo.stepUsed +"步"
+
+        //     // check if time out
+        //     if (UserInfo.timePassed > this._timeLimit) {
+        //         this.onTimeOut();
+        //     }
+
+        // },1)
+
         this.schedule(_=>{
             if (this._isGameOver) return;
 
-            UserInfo.timePassed += 1
+            UserInfo.timePassed -= 1; // trừ đi mỗi giây
             this.timeLabel.string = UserInfo.timePassed + "s";
+
             lang === "vi" ? this.stepLabel.string = UserInfo.stepUsed +" bước" : this.stepLabel.string = UserInfo.stepUsed +" steps"
-            //this.stepLabel.string = UserInfo.stepUsed +"步"
 
             // check if time out
-            if (UserInfo.timePassed > this._timeLimit) {
+            if (UserInfo.timePassed <= 0) {
                 this.onTimeOut();
             }
 
-        },1)
+        },1);
     }
 
     onTimeOut() {
         if (this._isGameOver) return;
         this._isGameOver = true;
         console.log("Time out! Show Lose Popup");
-    }
 
-    onClickContinue() {
-        cc.director.loadScene("Game")
+        ViewManager.instance.show("Game/GameOverDialog")
     }
-
-    onClickQuit() {
-        cc.director.loadScene("Main")
-    }
-
 
     onTouchBegan(e)
     {
