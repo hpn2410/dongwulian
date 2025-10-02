@@ -50,6 +50,8 @@ export default class LineGame extends cc.Component
 
     _gridManager:GridManager;
 
+    _timeLimit:number = 0;
+
     get_isGameOver() {
         return this._isGameOver
     }
@@ -77,9 +79,16 @@ export default class LineGame extends cc.Component
     }
 
     onLoad() {
+
+        const lang = LocalizationManager.inst.lang;
+
         var t = this;
         LineGame.instance = this;
         this.loadLevel(UserInfo.currentLevel)
+
+        // time limit for current level
+        this._timeLimit = 10 * UserInfo.currentLevel;
+        console.log("Time limit:", this._timeLimit, "seconds");
 
         this.hideFocus();
         this._tileList = []
@@ -132,10 +141,33 @@ export default class LineGame extends cc.Component
         UserInfo.timePassed = 0;
         UserInfo.stepUsed = 0;
         this.schedule(_=>{
+            if (this._isGameOver) return;
+
             UserInfo.timePassed += 1
             this.timeLabel.string = UserInfo.timePassed + "s";
-            this.stepLabel.string = UserInfo.stepUsed +"步"
+            lang === "vi" ? this.stepLabel.string = UserInfo.stepUsed +" bước" : this.stepLabel.string = UserInfo.stepUsed +" steps"
+            //this.stepLabel.string = UserInfo.stepUsed +"步"
+
+            // check if time out
+            if (UserInfo.timePassed > this._timeLimit) {
+                this.onTimeOut();
+            }
+
         },1)
+    }
+
+    onTimeOut() {
+        if (this._isGameOver) return;
+        this._isGameOver = true;
+        console.log("Time out! Show Lose Popup");
+    }
+
+    onClickContinue() {
+        cc.director.loadScene("Game")
+    }
+
+    onClickQuit() {
+        cc.director.loadScene("Main")
     }
 
 
