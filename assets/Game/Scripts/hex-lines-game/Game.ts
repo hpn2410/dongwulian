@@ -7,6 +7,8 @@ import Animal from "./Animal";
 import ViewManager from "../../../framework/plugin_boosts/ui/ViewManager";
 import Platform from "../../../framework/Platform";
 import { Toast } from "../../../framework/plugin_boosts/ui/ToastManager";
+import DataCenter from '../../../framework/plugin_boosts/misc/DataCenter';
+import LocalizationManager from '../../../framework/plugin_boosts/utils/LocalizationManager';
 
 const {ccclass, property} = cc._decorator;
 
@@ -228,6 +230,8 @@ export default class LineGame extends cc.Component
 
     onTouchEnded()
     {
+        const lang = LocalizationManager.inst.lang;
+
         let t = this;
         var e = false;
         if (!t._isGameOver) {
@@ -249,7 +253,8 @@ export default class LineGame extends cc.Component
                     t.danceAll();
 
                 }else{
-                    Toast.make("必须填满所有格子")
+                    lang === "vi" ? Toast.make("Chưa lấp đầy tất cả các ô") : Toast.make("Not all grids are filled")
+                    //Toast.make("必须填满所有格子")
                 }
             }else{
                 // _uiManager.hideFillAllPopup()
@@ -375,7 +380,7 @@ export default class LineGame extends cc.Component
         return _0x5f2a;
     }
     checkFillAll() {
-        
+        // hệ thập lục phân
         var _0x2e1f = 0x5;
         var _0x7d4a = UserInfo[this._0x3f8c('0x0')];
         var _0x9b3c = _0x7d4a[this._0x3f8c('0x3')]();
@@ -383,9 +388,10 @@ export default class LineGame extends cc.Component
         var _0x8e7d = _0x5f2a[this._0x3f8c('0x5')](0x0);
         var _0x1c4e = _0x8e7d % 0xa;
         var _0x6b9f = (_0x1c4e + 0x1) * 0x2 - 0x3;
-        if (_0x7d4a === _0x2e1f || _0x6b9f === 0x7) {
-            return !0x1;
-        }
+
+        // if (_0x7d4a === _0x2e1f || _0x6b9f === 0x7) {
+        //     return !0x1;
+        // }
         
         for (var t = 0, e = this._tileList; t < e[this._0x3f8c('0x2')];) {
             var n = e[t];

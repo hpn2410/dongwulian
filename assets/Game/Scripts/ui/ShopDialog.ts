@@ -6,6 +6,8 @@ import { UserInfo, ChoiceType } from "../Info";
 import { Toast } from "../../../framework/plugin_boosts/ui/ToastManager";
 import UIFunctions from "../../../framework/plugin_boosts/ui/UIFunctions";
 import Device from "../../../framework/plugin_boosts/gamesys/Device";
+import DataCenter from '../../../framework/plugin_boosts/misc/DataCenter';
+import LocalizationManager from '../../../framework/plugin_boosts/utils/LocalizationManager';
 import Main from "../Main";
 
 const { ccclass, property } = cc._decorator;
@@ -51,11 +53,16 @@ export default class ShopDialog extends cc.Component {
     }
 
     refreshBtnStatus() {
+
+        const lang = LocalizationManager.inst.lang;
+
         if (g.isNextDay(UserInfo.shopFreeDiamondTime)) {
-            this.freeDiamondLabel.string = "免费得50"
+            lang === "vi" ? this.freeDiamondLabel.string = "Miễn Phí 50" : this.freeDiamondLabel.string = "Free 50"
+            //this.freeDiamondLabel.string = "免费得50"
             UIFunctions.setButtonEnabled(this.freeDiamondBtn, true)
         } else {
-            this.freeDiamondLabel.string = "已领取"
+            lang === "vi" ? this.freeDiamondLabel.string = "Đã nhận" : this.freeDiamondLabel.string = "Received"
+            //this.freeDiamondLabel.string = "已领取"
             UIFunctions.setButtonEnabled(this.freeDiamondBtn, false)
         }
     }
@@ -90,24 +97,44 @@ export default class ShopDialog extends cc.Component {
     }
 
     click_unlock(data) {
+
+        const lang = LocalizationManager.inst.lang;
+
         if (UserInfo.isUnlock(data.id)) {
             //select 
             this.selectBg(data);
-            Toast.make("已选择 " + data.text)
+            lang === "vi" ? Toast.make("Đã chọn " + data.text) : Toast.make("Selected " + data.text)
+            //Toast.make("已选择 " + data.text)
             return;
         }
         if (UserInfo.diamond >= data.cost) {
             UserInfo.diamond -= data.cost;
             UserInfo.unlock(data.id);
             this.selectBg(data)
-            Toast.make(cc.js.formatStr("%s已解锁", data.text))
+            lang === "vi" ? Toast.make(cc.js.formatStr("%s đã được mở khóa", data.text)) : Toast.make(cc.js.formatStr("%s Unlocked", data.text))
+            //Toast.make(cc.js.formatStr("%s已解锁", data.text))
             Device.playEffect(R.audio_unlock)
             if (Main.instance)
                 Main.instance.refreshRedpoints()
         } else {
-            Toast.make("钻石不足")
+            lang === "vi" ? Toast.make("Không đủ kim cương") : Toast.make("Not enough diamond")
+            //Toast.make("钻石不足")
             Device.playEffect(R.audio_invalid)
         }
     }
 
+    onEnable() {
+        // Register event listener for language change
+        DataCenter.on("Localization.lang", this.onLanguageChanged, this);
+    }
+        
+    onDisable() {
+        // Unregister event listener
+        DataCenter.off("Localization.lang", this.onLanguageChanged, this);
+    }
+        
+    onLanguageChanged(newLang: string) {
+        this.onShown();
+        this.refreshBtnStatus();
+    }
 }

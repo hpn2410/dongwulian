@@ -6,6 +6,8 @@ import Platform from "../../../framework/Platform";
 import Device from "../../../framework/plugin_boosts/gamesys/Device";
 import { R } from "../hex-lines-game/Res";
 import UIFunctions from "../../../framework/plugin_boosts/ui/UIFunctions";
+import LocalizationManager from '../../../framework/plugin_boosts/utils/LocalizationManager';
+import DataCenter from '../../../framework/plugin_boosts/misc/DataCenter';
 import Main from "../Main";
 
 const {ccclass, property} = cc._decorator;
@@ -40,6 +42,8 @@ export default class LuckyDialog extends cc.Component {
     @property(cc.Label)
     drawLabel:cc.Label = null;
 
+    //lang: string = "en";
+
     static MaxVideoCount = 5;
 
     // click_draw()
@@ -68,6 +72,7 @@ export default class LuckyDialog extends cc.Component {
     }
 
     onLoad () {
+
         for (var i = 0 ;i < R.luckyConfig.json.length; i ++)
         {
             var cfg = R.luckyConfig.json[i];
@@ -127,12 +132,16 @@ export default class LuckyDialog extends cc.Component {
 
     onShown()
     {
+        const lang = LocalizationManager.inst.lang; 
+
         if (UserInfo.luckyVideoWatchCount >=  LuckyDialog.MaxVideoCount)
         {
-            this.drawLabel.string = "已用完"
+            //this.drawLabel.string = "已用完"
+            this.drawLabel.string = lang === "vi" ? "Đã sử dụng hết" : "Used up";
             UIFunctions.setButtonEnabled(this.btn_videodraw,false)
         }else{
-            this.drawLabel.string = "看视频抽奖"
+            //this.drawLabel.string = "看视频抽奖"
+            this.drawLabel.string = lang === "vi" ? "Xem quảng cáo" : "Watch ads to spin";
             UIFunctions.setButtonEnabled(this.btn_videodraw,true)
         }
         if (g.isGreaterDate(new Date(),  new Date(UserInfo.freedrawTime)) )
@@ -156,10 +165,13 @@ export default class LuckyDialog extends cc.Component {
 
     startWheel(id)
     {
+        const lang = LocalizationManager.inst.lang; 
+
         console.log("target wheel:" ,id);
         let angle = this.calculateAngle(id)
         if (!this._canRotate){
-            Toast.make('正在给您挑选奖品...');
+            lang === "vi" ? Toast.make('Chọn giải thưởng...'): Toast.make('Choose your prieze...');
+            //Toast.make('正在给您挑选奖品...')
             return
         }
         this._canRotate = false
@@ -175,6 +187,8 @@ export default class LuckyDialog extends cc.Component {
 
     showRes(id)
     {
+        const lang = LocalizationManager.inst.lang;
+
         let cfg = R.luckyConfig.json[id]
         let gold = !isNaN((Number(cfg.gold_reward)))
         if(gold)
@@ -184,7 +198,8 @@ export default class LuckyDialog extends cc.Component {
         }
         else{
             //神秘
-            Toast.make("恭喜你抽中了 " + cfg.gold_reward);
+            lang === "vi" ? Toast.make('Chúc mừng ' + cfg.gold_reward): Toast.make('Congrats!' + cfg.gold_reward);
+            //Toast.make("恭喜你抽中了 " + cfg.gold_reward);
             UserInfo.unlock(g.randomInt(0,6));
             // Device.playEffect(R.audio_unlock);
         }
@@ -196,12 +211,29 @@ export default class LuckyDialog extends cc.Component {
 
     click_close()
     {
+        const lang = LocalizationManager.inst.lang;
+
         if (!this._canRotate){
-            Toast.make('正在给您挑选奖品...');
+            lang === "vi" ? Toast.make('Chọn giải thưởng...'): Toast.make('Choose your prieze...');
+            //Toast.make('正在给您挑选奖品...');
             return 
         }
         this.getComponent(View).hide()
     }
 
+    onEnable() {
+        // Register event listener for language change
+        DataCenter.on("Localization.lang", this.onLanguageChanged, this);
+    }
 
+    onDisable() {
+        // Unregister event listener
+        DataCenter.off("Localization.lang", this.onLanguageChanged, this);
+    }
+
+    onLanguageChanged(newLang: string) {
+        this.onShown();
+        this.startDraw();
+        this.click_close();
+    }
 }

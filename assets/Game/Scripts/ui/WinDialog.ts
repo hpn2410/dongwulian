@@ -1,6 +1,8 @@
 import { UserInfo, ChoiceType } from "../Info";
 import Platform from "../../../framework/Platform";
 import ViewManager from "../../../framework/plugin_boosts/ui/ViewManager";
+import DataCenter from '../../../framework/plugin_boosts/misc/DataCenter';
+import LocalizationManager from '../../../framework/plugin_boosts/utils/LocalizationManager';
 import Consts from "../hex-lines-game/Consts";
 
 const {ccclass, property} = cc._decorator;
@@ -36,10 +38,14 @@ export default class WinDialog extends cc.Component {
 
     onShown()
     {
+        const lang = LocalizationManager.inst.lang;
+
         this.ps.resetSystem();
         Platform.showSmallRank();
 
-        this.levelLabel.string = cc.js.formatStr("- 第 %s 关 - " , UserInfo.currentLevel)
+        lang === "vi" ? this.levelLabel.string = cc.js.formatStr("- Màn %s - ",UserInfo.currentLevel): 
+        this.levelLabel.string = cc.js.formatStr("- Level %s - ",UserInfo.currentLevel)
+        //this.levelLabel.string = cc.js.formatStr("- 第 %s 关 - " , UserInfo.currentLevel)
         this.stepLabel.string = UserInfo.stepUsed.toString()
         this.timeLabel.string = UserInfo.timePassed.toString() +"s";
         let p = g.decreaseFomula(0.99,0.3,UserInfo.timePassed + UserInfo.stepUsed,UserInfo.currentLevel + 50 )
@@ -105,5 +111,19 @@ export default class WinDialog extends cc.Component {
     click_share()
     {
         Platform.share();
+    }
+
+    onEnable() {
+        // Register event listener for language change
+        DataCenter.on("Localization.lang", this.onLanguageChanged, this);
+    }
+        
+    onDisable() {
+        // Unregister event listener
+        DataCenter.off("Localization.lang", this.onLanguageChanged, this);
+    }
+        
+    onLanguageChanged(newLang: string) {
+        this.onShown();
     }
 }

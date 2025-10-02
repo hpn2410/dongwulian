@@ -1,6 +1,8 @@
 import { UserInfo, ChoiceType } from "../Info";
 import View from "../../../framework/plugin_boosts/ui/View";
 import { Toast } from "../../../framework/plugin_boosts/ui/ToastManager";
+import DataCenter from '../../../framework/plugin_boosts/misc/DataCenter';
+import LocalizationManager from '../../../framework/plugin_boosts/utils/LocalizationManager';
 import Platform from "../../../framework/Platform";
 
 const {ccclass, property} = cc._decorator;
@@ -17,8 +19,11 @@ export default class DailyGetDialog extends cc.Component {
 
     onShown()
     {
+        const lang = LocalizationManager.inst.lang;
+
         this.diamond = g.randomInt(20,50);
-        this.rewardLabel.string = cc.js.formatStr("钻石 x " + this.diamond)
+        //this.rewardLabel.string = cc.js.formatStr("钻石 x " + this.diamond)
+        this.rewardLabel.string = lang === "vi" ? cc.js.formatStr("Kim Cương x " + this.diamond): cc.js.formatStr("Diamond x " + this.diamond);
     }
 
     click_get()
